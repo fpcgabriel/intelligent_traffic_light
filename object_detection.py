@@ -21,7 +21,7 @@ class ObjectDetection: # A class with methods and attributes to detect objects
         with open (classes_path, 'r') as file_object: # Opens the file with classes as a only reading file
             for class_name in file_object: # Deletes blank spaces and fill the list with the classes
                 class_name = class_name.strip('')
-                self.classes.append()
+                self.classes.append(class_name)
         return self.classes
 
     def detect(self, frame): # Method of the model which detects objects in a frame
