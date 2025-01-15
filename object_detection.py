@@ -12,7 +12,7 @@ class ObjectDetection: # A class with methods and attributes to detect objects
         # Neural network configuration
         net = cv2.dnn.readNet(weights_path, cfg_path) # Loading neural network
         net.setPreferableBackend(cv2.dnn.DNN_BACKEND_CUDA) # Enables use of NVIDIA GPU with CUDA
-        net.setPreferabletARGET(cv2.dnn.DNN_TARGET_CUDA)
+        net.setPreferabletTarget(cv2.dnn.DNN_TARGET_CUDA)
         # Detection model
         self.model = cv2.dnn_DetectionModel(net) # Loads the detection model with the neural network
         self.model.setInputParams(size = (self.image_size, self.image_size), scale = 1/255) # Setting input parameters for model
