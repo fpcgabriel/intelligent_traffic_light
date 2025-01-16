@@ -7,12 +7,17 @@ import time
 # Initialize Object Detection
 od = ObjectDetection()
 
-# Función para analizar un video durante 5 segundos y contar vehículos
-def analyze_video(video_path, target_ids):
-    cap = cv2.VideoCapture(video_path)
-    video_fps = cap.get(cv2.CAP_PROP_FPS)
-    num_frames_to_run = int(3 * video_fps)
-
+def analyze_video(video_path, target_ids, secs = 5):
+    ''' Function to get the number of objects found in a video
+    inputs: 
+    - the computer path of the video (string)
+    - the ids of classes searched (list)
+    - secs: number of seconds of the video wanted to analyze (int)
+    '''
+    cap = cv2.VideoCapture(video_path) # Captures the video
+    video_fps = cap.get(cv2.CAP_PROP_FPS) # Returns the fps of the video
+    num_frames_to_run = int(secs * video_fps) # Computes the number of frames that will be analyzed
+    #Inicialization of variables
     count = 0
     center_points_prev_frame = []
     tracking_objects = {}
@@ -27,7 +32,7 @@ def analyze_video(video_path, target_ids):
         if not ret or count > num_frames_to_run:
             break
 
-        # Calcular FPS
+        # Computing FPS
         current_time = time.time()
         frame_id += 1
 
@@ -36,24 +41,25 @@ def analyze_video(video_path, target_ids):
             frame_id = 0
             fps_start_time = current_time
 
-        # Mostrar los FPS en el frame
+        # Showing FPS in frame
         cv2.putText(frame, f"FPS: {fps}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
         center_points_cur_frame = []
 
-        # Detectar objetos en el frame
+        # Detects objects in frames
         (class_ids, scores, boxes) = od.detect(frame)
         for i, box in enumerate(boxes):
             if class_ids[i] not in target_ids:
-                continue  # Saltar si la id no es 2, 5,
-
+                continue  # Ignores other classes rather than selected
+            # Drawing boxes with objects detected
             (x, y, w, h) = box
+            cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+
+            # Gets the center point of the object
             cx = int((x + x + w) / 2)
             cy = int((y + y + h) / 2)
             center_points_cur_frame.append((cx, cy))
 
-            cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
-
-        # Comparar frames al principio
+        # Comparing frames
         if count <= 2:
             for pt in center_points_cur_frame:
                 for pt2 in center_points_prev_frame:
@@ -97,7 +103,7 @@ def analyze_video(video_path, target_ids):
         
         cv2.imshow("Frame", frame)
 
-        # Hacer una copia de los puntos
+        # Current frame to previous frame
         center_points_prev_frame = center_points_cur_frame.copy()
 
         key = cv2.waitKey(1)
@@ -108,56 +114,6 @@ def analyze_video(video_path, target_ids):
     cv2.destroyAllWindows()
     return max(tracking_objects.keys(), default=-1) + 1
 
-# IDs que deseas rastrear
+# Classes will be tracked (cars, buses and motorcycles)
 target_ids = {2, 5, 7}
-
-# Analizar el primer video y obtener el número de vehículos detectados
-#vehicles_in_first_video = analyze_video("1.mp4", target_ids)
-
-
-# Analizar el segundo video y obtener el número de vehículos detectados
-#vehicles_in_second_video = analyze_video("2.mp4", target_ids)
-
-
-# Analizar el primer video y obtener el número de vehículos detectados
-#vehicles_in_third_video = analyze_video("3.mp4", target_ids)
-
-
-# Analizar el segundo video y obtener el número de vehículos detectados
-#vehicles_in_fourth_video = analyze_video("4.mp4", target_ids)
-
-
-# Analizar el primer video y obtener el número de vehículos detectados
-#vehicles_in_fifth_video = analyze_video("5.mp4", target_ids)
-
-
-# Analizar el segundo video y obtener el número de vehículos detectados
-#vehicles_in_sixth_video = analyze_video("6.mp4", target_ids)
-
-
-# Analizar el primer video y obtener el número de vehículos detectados
-#vehicles_in_seventh_video = analyze_video("7.mp4", target_ids)
-
-
-# Analizar el segundo video y obtener el número de vehículos detectados
-#vehicles_in_eighth_video = analyze_video("8.mp4", target_ids)
-
-
-# Analizar el primer video y obtener el número de vehículos detectados
-# vehicles_in_ninth_video = analyze_video("9.mp4", target_ids)
-
-
-# Analizar el segundo video y obtener el número de vehículos detectados
-#vehicles_in_tenth_video = analyze_video("10.mp4", target_ids)
-
-
-# print(f"Vehículos detectados en el primer video: {vehicles_in_first_video}")
-# print(f"Vehículos detectados en el segundo video: {vehicles_in_second_video}")
-# print(f"Vehículos detectados en el tercer video: {vehicles_in_third_video}")
-# print(f"Vehículos detectados en el cuarto video: {vehicles_in_fourth_video}")
-# print(f"Vehículos detectados en el quinto video: {vehicles_in_fifth_video}")
-# print(f"Vehículos detectados en el sexto video: {vehicles_in_sixth_video}")
-# print(f"Vehículos detectados en el septimo video: {vehicles_in_seventh_video}")
-# print(f"Vehículos detectados en el octavo video: {vehicles_in_eighth_video}")
-# print(f"Vehículos detectados en el noveno video: {vehicles_in_ninth_video}")
-# print(f"Vehículos detectados en el decimo video: {vehicles_in_tenth_video}")
+vehicles_in_first_video = analyze_video("los_angeles.mp4", target_ids)
